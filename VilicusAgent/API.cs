@@ -157,7 +157,7 @@ namespace VilicusAgent
 
             try
             {
-                return _APIRequest<APIServiceList>(Method.GET, "service/", segments, ParameterType.QueryString);
+                return _APIRequest<APIServiceList>(Method.GET, "windowsservice/", segments, ParameterType.QueryString);
             }
             catch (ApplicationException e)
             {
