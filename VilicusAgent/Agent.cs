@@ -157,11 +157,11 @@ namespace VilicusAgent
             l.timestamp = DateTime.Now;
             if (sc != null)
             {
-                l.actual_status = sc.Status.ToString();
+                l.actual_status = ServiceStatus.GetFirstKeyFromValue(sc.Status);
             }
             else
             {
-                l.actual_status = "Not installed";
+                l.actual_status = "NOT_INSTALLED";
             }
             l.action_taken = action_taken;
             _api.SendServiceLog(l);
@@ -175,13 +175,13 @@ namespace VilicusAgent
                 ServiceController sc = new ServiceController(service.service_name);
                 try
                 {
-                    var exp = ServiceStatus.Resolve(service.expected_status);
+                    var exp = ServiceStatus.Map[service.expected_status];
                     if (exp != sc.Status)
                     {
-                        log.Error(String.Format("Service {0} is in state [{1}] when it was expected to be in state [{2}].", 
-                            service.service_name, sc.Status.ToString(), exp));
-                        SendStatus(service, sc, "None");
+                        log.Error(String.Format("Service {0} is in state {1} when it was expected to be in state {2}.",
+                            service.service_name, ServiceStatus.GetFirstKeyFromValue(sc.Status), service.expected_status));
                     }
+                    SendStatus(service, sc, "None");
                 }
                 catch (InvalidOperationException)
                 {
@@ -211,8 +211,7 @@ namespace VilicusAgent
             log.Debug("Configured services:");
             foreach (var service in _services)
             {
-                log.Debug(String.Format("  {0}: {1} (expecting {2})", service.id, service.service_name, 
-                        ServiceStatus.Resolve(service.expected_status)));
+                log.Debug(String.Format("  {0}: {1} (expecting state {2})", service.id, service.service_name, service.expected_status));
             }
         }
 
