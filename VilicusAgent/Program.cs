@@ -3,14 +3,34 @@ using System.Collections.Generic;
 using System.Configuration.Install;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace VilicusAgent
 {
     static class Program
     {
+        private static void RunProgram()
+        {
+            if (Environment.UserInteractive)
+            {
+                // Run interactively on a console
+                var agent = new Agent(true);
+                agent.DoWorkLoop();
+            }
+            else
+            {
+                // Started from SCM, fire up a worker service
+                ServiceBase[] ServicesToRun;
+                ServicesToRun = new ServiceBase[] { 
+                    new AgentService() 
+                };
+                ServiceBase.Run(ServicesToRun);
+            }
+        }
 
         /// <summary>
         /// The main entry point for the application.
@@ -41,21 +61,26 @@ namespace VilicusAgent
             }
             else
             {
-                if (Environment.UserInteractive)
+                string appGuid = ((GuidAttribute)Assembly.GetExecutingAssembly()
+                                                         .GetCustomAttributes(typeof(GuidAttribute), false)
+                                                         .GetValue(0)).Value.ToString();
+                try
                 {
-                    // Run interactively on a console
-                    var agent = new Agent(true);
-                    agent.DoWorkLoop();
+                    // Prevent the agent from running more than one instance by locking its GUID
+                    using (Mutex mutex = new Mutex(false, "Global\\" + appGuid))
+                    {
+                        if (!mutex.WaitOne(0, false))
+                        {
+                            throw new UnauthorizedAccessException();
+                        }
+                        // All good, go.
+                        RunProgram();
+                    }
                 }
-                else
+                catch (UnauthorizedAccessException)
                 {
-                    // Started from SCM, fire up a worker service
-                    ServiceBase[] ServicesToRun;
-                    ServicesToRun = new ServiceBase[] 
-                    { 
-                        new AgentService() 
-                    };
-                    ServiceBase.Run(ServicesToRun);
+                    Console.Error.WriteLine("Another instance of VilicusAgent.exe is running (guid " + appGuid + " is locked.)");
+                    System.Environment.Exit(1);
                 }
             }
         }
