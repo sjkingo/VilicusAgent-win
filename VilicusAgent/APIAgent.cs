@@ -14,5 +14,7 @@ namespace VilicusAgent
         public string hostname { get; set; }
         public int check_interval_ms { get; set; }
         public DateTime? last_checkin { get; set; }
+        public string version { get; set; }
+        public string guid { get; set; }
     }
 }

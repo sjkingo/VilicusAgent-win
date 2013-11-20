@@ -4,6 +4,8 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
@@ -21,12 +23,14 @@ namespace VilicusAgent
         private bool _isInteractive;
         private API _api;
         private List<APIService> _services;
+        readonly string _appGuid;
 
         delegate void FailureDelegate(string s);
 
         public Agent(bool isInteractive)
         {
             this._isInteractive = isInteractive;
+            this._appGuid = ((GuidAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(GuidAttribute), false).GetValue(0)).Value.ToString();
             SetupLogFile();
             ValidateConfig();
             SetupAPI();
@@ -118,6 +122,21 @@ namespace VilicusAgent
             {
                 log.Info(String.Format("My configured hostname ({0}) differs from my actual ({1}), fixing", agent.hostname, actual_hostname));
                 agent.hostname = actual_hostname;
+            }
+
+            // Check if we need to update the version
+            if (agent.version != VERSION)
+            {
+                log.Info(String.Format("Updating version information on manager from {0} to {1}", agent.version, VERSION));
+                agent.version = VERSION;
+            }
+
+            // Check if we need to update the GUID
+            
+            if (agent.guid != _appGuid)
+            {
+                log.Info(String.Format("Updating GUID on manager from {0} to {1}", agent.guid, _appGuid));
+                agent.guid = _appGuid;
             }
 
             _api.UpdateAgent(agent);
