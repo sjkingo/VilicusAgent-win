@@ -150,6 +150,23 @@ namespace VilicusAgent
                     : string.Format("{0}.{1}", ipProperties.HostName, ipProperties.DomainName);
         }
 
+        private void SendStatus(APIService service, ServiceController sc, string action_taken)
+        {
+            var l = new APIServiceLog();
+            l.service = service.resource_uri;
+            l.timestamp = DateTime.Now;
+            if (sc != null)
+            {
+                l.actual_status = sc.Status.ToString();
+            }
+            else
+            {
+                l.actual_status = "Not installed";
+            }
+            l.action_taken = action_taken;
+            _api.SendServiceLog(l);
+        }
+
         public void DoWork()
         {
             UpdateServices();
@@ -161,18 +178,15 @@ namespace VilicusAgent
                     var exp = ServiceStatus.Resolve(service.expected_status);
                     if (exp != sc.Status)
                     {
-                        log.Error("Service " + service.service_name + " is in state " + sc.Status.ToString() + " when it should be in " + exp);
-                        var l = new APIServiceLog();
-                        l.service = service.resource_uri;
-                        l.timestamp = DateTime.Now;
-                        l.actual_status = sc.Status.ToString();
-                        l.action_taken = "None";
-                        _api.SendServiceLog(l);
+                        log.Error(String.Format("Service {0} is in state [{1}] when it was expected to be in state [{2}].", 
+                            service.service_name, sc.Status.ToString(), exp));
+                        SendStatus(service, sc, "None");
                     }
                 }
                 catch (InvalidOperationException)
                 {
-                    log.Error("Configured service " + service.service_name + " does not exist");
+                    log.Error(String.Format("Service {0} is not installed.", service.service_name));
+                    SendStatus(service, null, "None");
                     continue;
                 }
             }
