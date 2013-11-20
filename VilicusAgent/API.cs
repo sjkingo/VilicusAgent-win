@@ -73,6 +73,22 @@ namespace VilicusAgent
         /// <typeparam name="T">The return type to deserialize the response to.</typeparam>
         /// <param name="method">The HTTP method to use for this request.</param>
         /// <param name="resource">The URL path of the HTTP request.</param>
+        /// <param name="body">Object to serialize and add to the body of the request.</param>
+        /// <returns>Response deserialized into a new object of type T</returns>
+        private T _APIRequest<T>(Method method, string resource, Object body) where T : new()
+        {
+            var request = new RestRequest(resource, method);
+            request.RequestFormat = DataFormat.Json;
+            request.AddBody(body);
+            return Execute<T>(request);
+        }
+
+        /// <summary>
+        /// Perform an API request.
+        /// </summary>
+        /// <typeparam name="T">The return type to deserialize the response to.</typeparam>
+        /// <param name="method">The HTTP method to use for this request.</param>
+        /// <param name="resource">The URL path of the HTTP request.</param>
         /// <param name="segments">Key/value pairs of items to substitute in the resource.</param>
         /// <returns>Response deserialized into a new object of type T</returns>
         private T _APIRequest<T>(Method method, string resource, Dictionary<string, string> segments,
@@ -142,6 +158,19 @@ namespace VilicusAgent
             try
             {
                 return _APIRequest<APIServiceList>(Method.GET, "service/", segments, ParameterType.QueryString);
+            }
+            catch (ApplicationException e)
+            {
+                log.Error(e.Message);
+                return null;
+            }
+        }
+
+        public APIServiceLog SendServiceLog(APIServiceLog l)
+        {
+            try
+            {
+                return _APIRequest<APIServiceLog>(Method.POST, "servicelog/", l);
             }
             catch (ApplicationException e)
             {

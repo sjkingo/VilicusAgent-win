@@ -162,6 +162,12 @@ namespace VilicusAgent
                     if (exp != sc.Status)
                     {
                         log.Error("Service " + service.service_name + " is in state " + sc.Status.ToString() + " when it should be in " + exp);
+                        var l = new APIServiceLog();
+                        l.service = service.resource_uri;
+                        l.timestamp = DateTime.Now;
+                        l.actual_status = sc.Status.ToString();
+                        l.action_taken = "None";
+                        _api.SendServiceLog(l);
                     }
                 }
                 catch (InvalidOperationException)

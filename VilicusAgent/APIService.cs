@@ -10,6 +10,7 @@ namespace VilicusAgent
     class APIService
     {
         public int id { get; set; }
+        public string resource_uri { get; set; }
         public string agent { get; set; }
         public string service_name { get; set; }
         public string expected_status { get; set; }
