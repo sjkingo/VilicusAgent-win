@@ -170,7 +170,7 @@ namespace VilicusAgent
         {
             try
             {
-                return _APIRequest<APIServiceLog>(Method.POST, "servicelog/", l);
+                return _APIRequest<APIServiceLog>(Method.POST, "windowsservicelog/", l);
             }
             catch (ApplicationException e)
             {
