@@ -180,13 +180,16 @@ namespace VilicusAgent
                         log.Error(String.Format("Service {0} is in state {1} when it was expected to be in state {2}.",
                             service.service_name, ServiceStatus.GetFirstKeyFromValue(sc.Status), service.expected_status));
                     }
-                    SendStatus(service, sc, "None");
+                    SendStatus(service, sc, "TODO");
                 }
                 catch (InvalidOperationException)
                 {
-                    log.Error(String.Format("Service {0} is not installed.", service.service_name));
-                    SendStatus(service, null, "None");
-                    continue;
+                    if (service.expected_status != "NOT_INSTALLED")
+                    {
+                        log.Error(String.Format("Service {0} is in state NOT_INSTALLED when it was expected to be in state {1}.",
+                            service.service_name, service.expected_status));
+                    }
+                    SendStatus(service, null, "TODO");
                 }
             }
         }
