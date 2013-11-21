@@ -26,7 +26,8 @@ namespace VilicusAgent
         /// <typeparam name="T">The return type to deserialize the response to.</typeparam>
         /// <param name="request">The pre-filled request object to use.</param>
         /// <returns>Response deserialized into a new object of type T</returns>
-        private T Execute<T>(RestRequest request) where T : new()
+        private T _Execute<T>(RestRequest request)
+            where T : new()
         {
             var client = new RestClient(_baseURL);
             log.Debug(String.Format("Executing an API call to {0}/{1} ({2})", 
@@ -43,77 +44,53 @@ namespace VilicusAgent
         }
 
         /// <summary>
-        /// Perform an API request.
+        /// Make an API request to the manager instance and return the response as type T
         /// </summary>
-        /// <typeparam name="T">The return type to deserialize the response to.</typeparam>
-        /// <param name="method">The HTTP method to use for this request.</param>
-        /// <param name="resource">The URL path of the HTTP request.</param>
-        /// <param name="segments">Key/value pairs of items to substitute in the resource.</param>
-        /// <param name="body">Object to serialize and add to the body of the request.</param>
-        /// <returns>Response deserialized into a new object of type T</returns>
-        private T _APIRequest<T>(Method method, string resource, Dictionary<string, string> segments,
-            Object body) where T : new()
-        {
-            var request = new RestRequest(resource, method);
-            request.RequestFormat = DataFormat.Json;
-            foreach (var entry in segments)
-            {
-                request.AddUrlSegment(entry.Key, entry.Value);
-            }
-            request.AddBody(body);
-            return Execute<T>(request);
-        }
-
-        /// <summary>
-        /// Perform an API request.
-        /// </summary>
-        /// <typeparam name="T">The return type to deserialize the response to.</typeparam>
-        /// <param name="method">The HTTP method to use for this request.</param>
-        /// <param name="resource">The URL path of the HTTP request.</param>
-        /// <param name="body">Object to serialize and add to the body of the request.</param>
-        /// <returns>Response deserialized into a new object of type T</returns>
-        private T _APIRequest<T>(Method method, string resource, Object body) where T : new()
-        {
-            var request = new RestRequest(resource, method);
-            request.RequestFormat = DataFormat.Json;
-            request.AddBody(body);
-            return Execute<T>(request);
-        }
-
-        /// <summary>
-        /// Perform an API request.
-        /// </summary>
-        /// <typeparam name="T">The return type to deserialize the response to.</typeparam>
-        /// <param name="method">The HTTP method to use for this request.</param>
-        /// <param name="resource">The URL path of the HTTP request.</param>
-        /// <param name="segments">Key/value pairs of items to substitute in the resource.</param>
-        /// <returns>Response deserialized into a new object of type T</returns>
-        private T _APIRequest<T>(Method method, string resource, Dictionary<string, string> segments,
-            ParameterType segmentType)
+        /// <typeparam name="T">The return type to deserialize the response into.</typeparam>
+        /// <param name="method">The HTTP method (GET, PUT, POST) to use.</param>
+        /// <param name="resource">The URI resource (without a leading slash) to request. Segments to replace (see urlSegments param) may be used like so: {id}.</param>
+        /// <param name="urlSegments">Optional. A mapping of key/value pairs to substitute in the resource param.</param>
+        /// <param name="queryStringSegments">Optional. A mapping of key/value pairs to construct a query string with.</param>
+        /// <param name="body">Optional. An object to be serialized and placed into the body of the request. Not valid when method=GET.</param>
+        /// <returns>Response deserialized into a new object of type T.</returns>
+        private T APIRequest<T>(Method method, string resource,
+            Dictionary<string, string> urlSegments = null,
+            Dictionary<string, string> queryStringSegments = null,
+            Object body = null)
             where T : new()
         {
             var request = new RestRequest(resource, method);
             request.RequestFormat = DataFormat.Json;
-            foreach (var entry in segments)
-            {
-                request.AddParameter(entry.Key, entry.Value, segmentType);
-            }
-            return Execute<T>(request);
-        }
 
-        /// <summary>
-        /// Perform an API request.
-        /// </summary>
-        /// <typeparam name="T">The return type to deserialize the response to.</typeparam>
-        /// <param name="method">The HTTP method to use for this request.</param>
-        /// <param name="resource">The URL path of the HTTP request.</param>
-        /// <returns>Response deserialized into a new object of type T</returns>
-        private T _APIRequest<T>(Method method, string resource)
-            where T : new()
-        {
-            var request = new RestRequest(resource, method);
-            request.RequestFormat = DataFormat.Json;
-            return Execute<T>(request);
+            // Perform substitution on resource segments
+            if (urlSegments != null)
+            {
+                foreach (var segment in urlSegments)
+                {
+                    request.AddUrlSegment(segment.Key, segment.Value);
+                }
+            }
+
+            // Add the query string segments
+            if (queryStringSegments != null)
+            {
+                foreach (var segment in queryStringSegments)
+                {
+                    request.AddParameter(segment.Key, segment.Value, ParameterType.QueryString);
+                }
+            }
+
+            // Add the body
+            if (body != null)
+            {
+                if (method == Method.GET)
+                {
+                    throw new ArgumentException("Specifying a body with method=GET is not valid.", "body");
+                }
+                request.AddBody(body);
+            }
+
+            return _Execute<T>(request);
         }
 
         public APIAgent GetAgent(int id)
@@ -123,7 +100,7 @@ namespace VilicusAgent
 
             try
             {
-                return _APIRequest<APIAgent>(Method.GET, "agent/{id}/", segments, ParameterType.UrlSegment);
+                return APIRequest<APIAgent>(Method.GET, "agent/{id}/", urlSegments: segments);
             }
             catch (ApplicationException e)
             {
@@ -138,7 +115,7 @@ namespace VilicusAgent
             segments.Add("id", agent.id.ToString());
 
             try {
-                return _APIRequest<APIAgent>(Method.PUT, "agent/{id}/", segments, agent);
+                return APIRequest<APIAgent>(Method.PUT, "agent/{id}/", urlSegments: segments, body: agent);
             }
             catch (ApplicationException e)
             {
@@ -154,7 +131,7 @@ namespace VilicusAgent
 
             try
             {
-                return _APIRequest<APIServiceList>(Method.GET, "windowsservice/", segments, ParameterType.QueryString);
+                return APIRequest<APIServiceList>(Method.GET, "windowsservice/", queryStringSegments: segments);
             }
             catch (ApplicationException e)
             {
@@ -167,7 +144,7 @@ namespace VilicusAgent
         {
             try
             {
-                return _APIRequest<APIServiceLog>(Method.POST, "windowsservicelog/", l);
+                return APIRequest<APIServiceLog>(Method.POST, "windowsservicelog/", body: l);
             }
             catch (ApplicationException e)
             {
