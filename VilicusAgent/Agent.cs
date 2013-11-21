@@ -87,10 +87,6 @@ namespace VilicusAgent
             log.Info(logging);
 
             agentConfig = InitialAgentConfig(Convert.ToInt32(ConfigurationManager.AppSettings["apiID"]));
-            if (agentConfig == null)
-            {
-                System.Environment.Exit(3);
-            }
         }
 
         private APIAgent InitialAgentConfig(int id)
@@ -100,7 +96,7 @@ namespace VilicusAgent
             if (agent == null)
             {
                 log.Error("Agent id=" + id + " does not exist at the Manager");
-                return null;
+                System.Environment.Exit(3);
             }
 
             string last_checkin;
@@ -177,7 +173,7 @@ namespace VilicusAgent
                     var exp = ServiceStatus.Map[service.expected_status];
                     if (exp != sc.Status)
                     {
-                        log.Error(String.Format("Service {0} is in state {1} when it was expected to be in state {2}.",
+                        log.Warn(String.Format("Service {0} is in state {1} when it was expected to be in state {2}.",
                             service.service_name, ServiceStatus.GetFirstKeyFromValue(sc.Status), service.expected_status));
                     }
                     SendStatus(service, sc, "TODO");
@@ -186,7 +182,7 @@ namespace VilicusAgent
                 {
                     if (service.expected_status != "NOT_INSTALLED")
                     {
-                        log.Error(String.Format("Service {0} is in state NOT_INSTALLED when it was expected to be in state {1}.",
+                        log.Warn(String.Format("Service {0} is in state NOT_INSTALLED when it was expected to be in state {1}.",
                             service.service_name, service.expected_status));
                     }
                     SendStatus(service, null, "TODO");

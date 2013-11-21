@@ -40,8 +40,7 @@ namespace VilicusAgent
             if (response.ErrorException != null)
             {
                 string message = "HTTP error from manager: " + response.StatusDescription;
-                var ex = new ApplicationException(message, response.ErrorException);
-                throw ex;
+                throw new ApplicationException(message, response.ErrorException);
             }
             return response.Data;
         }

@@ -42,6 +42,14 @@ namespace VilicusAgent
             }
         }
 
+        public void Debug(string msg)
+        {
+            if (!_debugFlag) return;
+            string now = DateTime.Now.ToString("s"); // s: 2008-06-15T21:15:07
+            string line = now + ": DEBUG: " + msg;
+            _WriteLog(line, false);
+        }
+
         public void Info(string msg)
         {
             string now = DateTime.Now.ToString("s"); // s: 2008-06-15T21:15:07
@@ -49,11 +57,10 @@ namespace VilicusAgent
             _WriteLog(line, false);
         }
 
-        public void Debug(string msg)
+        public void Warn(string msg)
         {
-            if (!_debugFlag) return;
             string now = DateTime.Now.ToString("s"); // s: 2008-06-15T21:15:07
-            string line = now + ": DEBUG: " + msg;
+            string line = now + ": WARN: " + msg;
             _WriteLog(line, false);
         }
 
