@@ -72,8 +72,7 @@ namespace VilicusAgent
 
         private void SetupAPI()
         {
-            int id = Convert.ToInt32(ConfigurationManager.AppSettings["apiID"]);
-            _api = new API(ConfigurationManager.AppSettings["apiURL"], id, log);
+            _api = new API(ConfigurationManager.AppSettings["apiURL"], log);
 
             string interactivity = "service";
             if (_isInteractive)
@@ -87,7 +86,7 @@ namespace VilicusAgent
             if (_isInteractive) logging += " and stdout";
             log.Info(logging);
 
-            agentConfig = InitialAgentConfig(id);
+            agentConfig = InitialAgentConfig(Convert.ToInt32(ConfigurationManager.AppSettings["apiID"]));
             if (agentConfig == null)
             {
                 System.Environment.Exit(3);

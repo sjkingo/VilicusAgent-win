@@ -11,13 +11,16 @@ namespace VilicusAgent
     class API
     {
         readonly string _baseURL;
-        readonly int _authID;
-        private Log log;
+        private Log _log;
 
-        public API(string baseURL, int authID, Log log) {
+        /// <summary>
+        /// Class for interacting with the manager API.
+        /// </summary>
+        /// <param name="baseURL">The base URL to find the manager API at.</param>
+        /// <param name="log">Instance of the log class that messages can be written to.</param>
+        public API(string baseURL, Log log) {
             this._baseURL = baseURL;
-            this._authID = authID;
-            this.log = log;
+            this._log = log;
         }
 
         /// <summary>
@@ -30,7 +33,7 @@ namespace VilicusAgent
             where T : new()
         {
             var client = new RestClient(_baseURL);
-            log.Debug(String.Format("Executing an API call to {0}/{1} ({2})", 
+            _log.Debug(String.Format("Executing an API call to {0}/{1} ({2})", 
                     client.BaseUrl, request.Resource, request.Method));
 
             var response = client.Execute<T>(request);
@@ -104,7 +107,7 @@ namespace VilicusAgent
             }
             catch (ApplicationException e)
             {
-                log.Error(e.Message);
+                _log.Error(e.Message);
                 return null;
             }
         }
@@ -119,7 +122,7 @@ namespace VilicusAgent
             }
             catch (ApplicationException e)
             {
-                log.Error(e.Message);
+                _log.Error(e.Message);
                 return null;
             }
         }
@@ -135,7 +138,7 @@ namespace VilicusAgent
             }
             catch (ApplicationException e)
             {
-                log.Error(e.Message);
+                _log.Error(e.Message);
                 return null;
             }
         }
@@ -148,7 +151,7 @@ namespace VilicusAgent
             }
             catch (ApplicationException e)
             {
-                log.Error(e.Message);
+                _log.Error(e.Message);
                 return null;
             }
         }
