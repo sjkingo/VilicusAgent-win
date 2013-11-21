@@ -150,6 +150,7 @@ namespace VilicusAgent
             var l = new API_WindowsServiceLog();
             l.service = service.resource_uri;
             l.timestamp = DateTime.Now;
+            l.expected_status = service.expected_status;
             if (sc != null)
             {
                 l.actual_status = ServiceState.GetFirstKeyFromValue(sc.Status);
