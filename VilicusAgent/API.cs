@@ -12,7 +12,6 @@ namespace VilicusAgent
     {
         readonly string _baseURL;
         readonly int _authID;
-        readonly string _authKey;
         private Log log;
 
         public API(string baseURL, int authID, Log log) {
@@ -30,7 +29,6 @@ namespace VilicusAgent
         private T Execute<T>(RestRequest request) where T : new()
         {
             var client = new RestClient(_baseURL);
-            //client.Authenticator = new HttpBasicAuthenticator(_authUUID, _authKey);
             log.Debug(String.Format("Executing an API call to {0}/{1} ({2})", 
                     client.BaseUrl, request.Resource, request.Method));
 
@@ -41,7 +39,6 @@ namespace VilicusAgent
                 var ex = new ApplicationException(message, response.ErrorException);
                 throw ex;
             }
-            //Console.Write(response.Content);
             return response.Data;
         }
 
