@@ -95,14 +95,14 @@ namespace VilicusAgent
             return _Execute<T>(request);
         }
 
-        public APIAgent GetAgent(int id)
+        public API_Agent GetAgent(int id)
         {
             var segments = new Dictionary<string, string>();
             segments.Add("id", id.ToString());
 
             try
             {
-                return APIRequest<APIAgent>(Method.GET, "agent/{id}/", urlSegments: segments);
+                return APIRequest<API_Agent>(Method.GET, "agent/{id}/", urlSegments: segments);
             }
             catch (ApplicationException e)
             {
@@ -111,13 +111,13 @@ namespace VilicusAgent
             }
         }
 
-        public APIAgent UpdateAgent(APIAgent agent)
+        public API_Agent UpdateAgent(API_Agent agent)
         {
             var segments = new Dictionary<string, string>();
             segments.Add("id", agent.id.ToString());
 
             try {
-                return APIRequest<APIAgent>(Method.PUT, "agent/{id}/", urlSegments: segments, body: agent);
+                return APIRequest<API_Agent>(Method.PUT, "agent/{id}/", urlSegments: segments, body: agent);
             }
             catch (ApplicationException e)
             {
@@ -126,7 +126,7 @@ namespace VilicusAgent
             }
         }
 
-        public APIServiceList GetServices(APIAgent agent)
+        public APIServiceList GetServices(API_Agent agent)
         {
             var segments = new Dictionary<string, string>();
             segments.Add("agent__id", agent.id.ToString());
@@ -142,11 +142,11 @@ namespace VilicusAgent
             }
         }
 
-        public APIServiceLog SendServiceLog(APIServiceLog l)
+        public API_WindowsServiceLog SendServiceLog(API_WindowsServiceLog l)
         {
             try
             {
-                return APIRequest<APIServiceLog>(Method.POST, "windowsservicelog/", body: l);
+                return APIRequest<API_WindowsServiceLog>(Method.POST, "windowsservicelog/", body: l);
             }
             catch (ApplicationException e)
             {

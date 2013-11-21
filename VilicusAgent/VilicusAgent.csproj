@@ -54,9 +54,9 @@
     <Compile Include="Agent.cs" />
     <Compile Include="AgentServiceHelper.cs" />
     <Compile Include="API.cs" />
-    <Compile Include="APIAgent.cs" />
-    <Compile Include="APIService.cs" />
-    <Compile Include="APIServiceLog.cs" />
+    <Compile Include="API_Agent.cs" />
+    <Compile Include="API_WindowsService.cs" />
+    <Compile Include="API_WindowsServiceLog.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>

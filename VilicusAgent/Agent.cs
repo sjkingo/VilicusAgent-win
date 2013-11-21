@@ -18,11 +18,11 @@ namespace VilicusAgent
         public static string VERSION = "1.0";
 
         public Log log;
-        public APIAgent agentConfig;
+        public API_Agent agentConfig;
 
         private bool _isInteractive;
         private API _api;
-        private List<APIService> _services;
+        private List<API_WindowsService> _services;
         readonly string _appGuid;
 
         delegate void FailureDelegate(string s);
@@ -89,7 +89,7 @@ namespace VilicusAgent
             agentConfig = InitialAgentConfig(Convert.ToInt32(ConfigurationManager.AppSettings["apiID"]));
         }
 
-        private APIAgent InitialAgentConfig(int id)
+        private API_Agent InitialAgentConfig(int id)
         {
             // Fetch this agent from the manager
             var agent = _api.GetAgent(id);
@@ -145,9 +145,9 @@ namespace VilicusAgent
                     : string.Format("{0}.{1}", ipProperties.HostName, ipProperties.DomainName);
         }
 
-        private void SendStatus(APIService service, ServiceController sc, string action_taken)
+        private void SendStatus(API_WindowsService service, ServiceController sc, string action_taken)
         {
-            var l = new APIServiceLog();
+            var l = new API_WindowsServiceLog();
             l.service = service.resource_uri;
             l.timestamp = DateTime.Now;
             if (sc != null)

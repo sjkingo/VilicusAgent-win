@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace VilicusAgent
 {
     [Serializable, SerializeAs(Name = "object")]
-    class APIAgent
+    class API_Agent
     {
         public int id { get; set; }
         public string hostname { get; set; }

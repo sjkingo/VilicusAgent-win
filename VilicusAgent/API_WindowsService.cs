@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace VilicusAgent
 {
-    class APIService
+    class API_WindowsService
     {
         public int id { get; set; }
         public string resource_uri { get; set; }
@@ -18,6 +18,6 @@ namespace VilicusAgent
 
     class APIServiceList
     {
-        public List<APIService> objects { get; set; }
+        public List<API_WindowsService> objects { get; set; }
     }
 }

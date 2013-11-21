@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VilicusAgent
 {
-    class APIServiceLog
+    class API_WindowsServiceLog
     {
         public string service { get; set; }
         public DateTime timestamp { get; set; }
