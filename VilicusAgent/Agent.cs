@@ -152,7 +152,7 @@ namespace VilicusAgent
             l.timestamp = DateTime.Now;
             if (sc != null)
             {
-                l.actual_status = ServiceStatus.GetFirstKeyFromValue(sc.Status);
+                l.actual_status = ServiceState.GetFirstKeyFromValue(sc.Status);
             }
             else
             {
@@ -170,11 +170,11 @@ namespace VilicusAgent
                 ServiceController sc = new ServiceController(service.service_name);
                 try
                 {
-                    var exp = ServiceStatus.Map[service.expected_status];
+                    var exp = ServiceState.Map[service.expected_status];
                     if (exp != sc.Status)
                     {
                         log.Warn(String.Format("Service {0} is in state {1} when it was expected to be in state {2}.",
-                            service.service_name, ServiceStatus.GetFirstKeyFromValue(sc.Status), service.expected_status));
+                            service.service_name, ServiceState.GetFirstKeyFromValue(sc.Status), service.expected_status));
                     }
                     SendStatus(service, sc, "TODO");
                 }

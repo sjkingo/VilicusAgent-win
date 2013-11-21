@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace VilicusAgent
 {
-    static class ServiceStatus
+    static class ServiceState
     {
         public static Dictionary<string, ServiceControllerStatus> Map = new Dictionary<string, ServiceControllerStatus>()
         {
