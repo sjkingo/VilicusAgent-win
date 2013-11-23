@@ -11,6 +11,7 @@ namespace VilicusAgent
     class API_Agent
     {
         public int id { get; set; }
+        public string resource_uri { get; set; }
         public string hostname { get; set; }
         public int check_interval_ms { get; set; }
         public DateTime? last_checkin { get; set; }

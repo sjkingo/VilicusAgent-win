@@ -53,10 +53,15 @@
   <ItemGroup>
     <Compile Include="Agent.cs" />
     <Compile Include="AgentServiceHelper.cs" />
-    <Compile Include="API.cs" />
+    <Compile Include="ApiClient.cs" />
+    <Compile Include="ApiRequest_Post.cs" />
+    <Compile Include="ApiRequest.cs" />
     <Compile Include="API_Agent.cs" />
+    <Compile Include="API_PerformanceLogEntry.cs" />
     <Compile Include="API_WindowsService.cs" />
     <Compile Include="API_WindowsServiceLog.cs" />
+    <Compile Include="ApiRequest_Put.cs" />
+    <Compile Include="ApiRequest_Get.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>

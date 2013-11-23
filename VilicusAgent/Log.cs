@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,25 +10,42 @@ namespace VilicusAgent
 {
     class Log
     {
-        public string filename;
+        private string filename;
+        private StreamWriter fp;        
+        private bool isInteractive;
+        private bool debugFlag;
 
-        private StreamWriter _log;        
-        private bool _isInteractive;
-        private bool _debugFlag;
-
-        public Log(string filename, bool isInteractive, bool debugFlag)
+        public Log(bool isInteractive)
         {
-            this.filename = filename;
-            this._log = new StreamWriter(filename);
-            this._isInteractive = isInteractive;
-            this._debugFlag = debugFlag;
+            this.filename = ConfigurationManager.AppSettings["logFilename"];
+            if (this.filename == null)
+            {
+                this.filename = "agent.log";
+            }
+
+            this.fp = new StreamWriter(filename);
+            this.isInteractive = isInteractive;
+
+            if (ConfigurationManager.AppSettings["logDebug"] != null)
+            {
+                debugFlag = Convert.ToBoolean(ConfigurationManager.AppSettings["logDebug"]);
+            }
+            else
+            {
+                debugFlag = false;
+            }
         }
 
-        private void _WriteLog(string line, bool stderr)
+        override public string ToString()
         {
-            _log.WriteLine(line);
-            _log.Flush();
-            if (_isInteractive)
+            return filename;
+        }
+
+        private void WriteLog(string line, bool stderr)
+        {
+            fp.WriteLine(line);
+            fp.Flush();
+            if (isInteractive)
             {
                 if (stderr)
                 {
@@ -44,31 +62,31 @@ namespace VilicusAgent
 
         public void Debug(string msg)
         {
-            if (!_debugFlag) return;
+            if (!debugFlag) return;
             string now = DateTime.Now.ToString("s"); // s: 2008-06-15T21:15:07
             string line = now + ": DEBUG: " + msg;
-            _WriteLog(line, false);
+            WriteLog(line, false);
         }
 
         public void Info(string msg)
         {
             string now = DateTime.Now.ToString("s"); // s: 2008-06-15T21:15:07
             string line = now + ": INFO: " + msg;
-            _WriteLog(line, false);
+            WriteLog(line, false);
         }
 
         public void Warn(string msg)
         {
             string now = DateTime.Now.ToString("s"); // s: 2008-06-15T21:15:07
             string line = now + ": WARN: " + msg;
-            _WriteLog(line, false);
+            WriteLog(line, false);
         }
 
         public void Error(string msg)
         {
             string now = DateTime.Now.ToString("s"); // s: 2008-06-15T21:15:07
             string line = now + ": ERROR: " + msg;
-            _WriteLog(line, true);
+            WriteLog(line, true);
         }
     }
 }

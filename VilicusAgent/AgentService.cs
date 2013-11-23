@@ -25,7 +25,7 @@ namespace VilicusAgent
         protected override void OnStart(string[] args)
         {
             agent = new Agent(false);
-            timer = new Timer(agent.agentConfig.check_interval_ms);
+            timer = new Timer(agent.agent.check_interval_ms);
             timer.AutoReset = true;
             timer.Elapsed += new ElapsedEventHandler(WorkerTick);
             timer.Start();
