@@ -23,7 +23,16 @@ namespace VilicusAgent
                 this.filename = "agent.log";
             }
 
-            this.fp = new StreamWriter(filename);
+            try
+            {
+                this.fp = new StreamWriter(filename);
+            }
+            catch (DirectoryNotFoundException exc)
+            {
+                Console.Error.WriteLine("FATAL: Could not create log file: " + exc.Message);
+                System.Environment.Exit(1);
+            }
+                
             this.isInteractive = isInteractive;
 
             if (ConfigurationManager.AppSettings["logDebug"] != null)
