@@ -16,6 +16,7 @@ namespace VilicusAgent
         {
             restRequest = new RestRequest(resource, method);
             restRequest.RequestFormat = DataFormat.Json;
+            restRequest.Timeout = 2000;
 
             // Perform substitution on resource segments
             if (urlSegments != null)
